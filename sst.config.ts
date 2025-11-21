@@ -22,8 +22,8 @@ export default $config({
     }
   },
   async run() {
+    await import('./infra/auth')
     await import('./infra/web')
-    await import('./infra/secret')
     await import('./infra/remotion')
   },
 })

@@ -22,6 +22,26 @@ declare module "sst" {
       "type": "sst.sst.Secret"
       "value": string
     }
+    "DATABASE_PASSWORD": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "DATABASE_USERNAME": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "Database": {
+      "database": string
+      "host": string
+      "password": string
+      "port": number
+      "type": "sst.sst.Linkable"
+      "username": string
+    }
+    "GOOGLE_CLIENT_ID": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
     "Remotion": {
       "bucketName": string
       "bucketUrl": string
@@ -43,6 +63,8 @@ declare module "sst" {
 import * as cloudflare from "@cloudflare/workers-types";
 declare module "sst" {
   export interface Resource {
+    "AuthApi": cloudflare.Service
+    "AuthStorage": cloudflare.KVNamespace
     "PrivateStorage": cloudflare.R2Bucket
     "PublicStorage": cloudflare.R2Bucket
     "RemotionBucket": cloudflare.R2Bucket

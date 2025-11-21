@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { chunk } from 'remeda'
 import { z } from 'zod'
 import { Actor } from '../actor'
-import { and, db, eq, inArray, lte } from '../database'
+import { and, eq, inArray, lte } from 'drizzle-orm'
 import { Storage } from '../storage'
 import { VisibleError, VisibleErrorCodes } from '../utils/error'
 import { fn } from '../utils/fn'
@@ -100,24 +100,28 @@ export namespace File {
         contentType: input.contentType,
         public: input.public,
       })
-      await db.insert(fileTable).values({
-        id,
-        workspaceID: Actor.workspaceID(),
-        contentType: input.contentType,
-        name: input.name,
-        public: input.public,
-        size: input.data.length,
-      })
+      await Database.use(async (tx) =>
+        tx.insert(fileTable).values({
+          id,
+          workspaceID: Actor.workspaceID(),
+          contentType: input.contentType,
+          name: input.name,
+          public: input.public,
+          size: input.data.length,
+        }),
+      )
       return id
     },
   )
 
   export const remove = fn(z.string(), async (id) => {
-    const file = await db
-      .select()
-      .from(fileTable)
-      .where(and(eq(fileTable.workspaceID, Actor.workspaceID()), eq(fileTable.id, id)))
-      .then((rows) => rows[0])
+    const file = await Database.use(async (tx) =>
+      tx
+        .select()
+        .from(fileTable)
+        .where(and(eq(fileTable.workspaceID, Actor.workspaceID()), eq(fileTable.id, id)))
+        .then((rows) => rows[0]),
+    )
     if (!file) {
       throw new VisibleError('not_found', VisibleErrorCodes.NotFound.RESOURCE_NOT_FOUND, 'File not found')
     }
@@ -126,15 +130,19 @@ export namespace File {
       keys: [getKey({ fileID: file.id, workspaceID: file.workspaceID })],
       public: file.public,
     })
-    await db.delete(fileTable).where(and(eq(fileTable.workspaceID, Actor.workspaceID()), eq(fileTable.id, file.id)))
+    await Database.use(async (tx) =>
+      tx.delete(fileTable).where(and(eq(fileTable.workspaceID, Actor.workspaceID()), eq(fileTable.id, file.id))),
+    )
   })
 
   export const download = fn(Info.shape.id, async (id) => {
-    const file = await db
-      .select()
-      .from(fileTable)
-      .where(and(eq(fileTable.workspaceID, Actor.workspaceID()), eq(fileTable.id, id)))
-      .then((rows) => rows[0])
+    const file = await Database.use(async (tx) =>
+      tx
+        .select()
+        .from(fileTable)
+        .where(and(eq(fileTable.workspaceID, Actor.workspaceID()), eq(fileTable.id, id)))
+        .then((rows) => rows[0]),
+    )
     if (!file) {
       throw new VisibleError('not_found', VisibleErrorCodes.NotFound.RESOURCE_NOT_FOUND, 'File not found')
     }
@@ -158,14 +166,16 @@ export namespace File {
     }),
     async (input) => {
       const fileID = Identifier.create('file')
-      await db.insert(fileUploadTable).values({
-        contentType: input.contentType,
-        fileID,
-        name: input.name,
-        workspaceID: Actor.workspaceID(),
-        public: input.public ?? false,
-        size: input.size,
-      })
+      await Database.use(async (tx) =>
+        tx.insert(fileUploadTable).values({
+          contentType: input.contentType,
+          fileID,
+          name: input.name,
+          workspaceID: Actor.workspaceID(),
+          public: input.public ?? false,
+          size: input.size,
+        }),
+      )
       const uploadUrl = await Storage.getSignedUrl({
         method: 'put',
         contentType: input.contentType,
@@ -205,10 +215,12 @@ export namespace File {
 
   // Purge file uploads that are not finalized and are older than 1 day
   export async function purgeUploads() {
-    const fileUploads = await db
-      .select()
-      .from(fileUploadTable)
-      .where(lte(fileUploadTable.createdAt, DateTime.now().minus({ day: 1 }).toJSDate()))
+    const fileUploads = await Database.use(async (tx) =>
+      tx
+        .select()
+        .from(fileUploadTable)
+        .where(lte(fileUploadTable.createdAt, DateTime.now().minus({ day: 1 }).toJSDate())),
+    )
     for (const fileUploadChunk of chunk(fileUploads, 1000)) {
       await Storage.remove({
         keys: fileUploadChunk.map((fileUpload: (typeof fileUploads)[0]) =>
@@ -216,10 +228,12 @@ export namespace File {
         ),
         public: fileUploadChunk[0]?.public ?? false,
       })
-      await db.delete(fileUploadTable).where(
-        inArray(
-          fileUploadTable.fileID,
-          fileUploadChunk.map((fileUpload: (typeof fileUploads)[0]) => fileUpload.fileID),
+      await Database.use(async (tx) =>
+        tx.delete(fileUploadTable).where(
+          inArray(
+            fileUploadTable.fileID,
+            fileUploadChunk.map((fileUpload: (typeof fileUploads)[0]) => fileUpload.fileID),
+          ),
         ),
       )
     }

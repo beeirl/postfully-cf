@@ -1,31 +1,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
-import { Resource } from 'sst'
-export * from 'drizzle-orm'
+import { Resource } from '@postfully/resource'
 import postgres from 'postgres'
 import { PgTransaction, type PgTransactionConfig } from 'drizzle-orm/pg-core'
 import type { ExtractTablesWithRelations } from 'drizzle-orm'
 import type { PostgresJsQueryResultHKT } from 'drizzle-orm/postgres-js'
 import { Context } from '../utils/context'
-
-function createClient() {
-  const client = postgres({
-    idle_timeout: 30000,
-    connect_timeout: 30000,
-    host: Resource.Database.host,
-    database: Resource.Database.database,
-    user: Resource.Database.username,
-    password: Resource.Database.password,
-    port: Resource.Database.port,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-    max: 1,
-  })
-
-  return drizzle(client, {})
-}
-
-export const db = createClient()
+import { memo } from '../utils/memo'
 
 export namespace Database {
   export type Transaction = PgTransaction<
@@ -34,7 +14,19 @@ export namespace Database {
     ExtractTablesWithRelations<Record<string, unknown>>
   >
 
-  export type TxOrDb = Transaction | ReturnType<typeof createClient>
+  const client = memo(() => {
+    const result = postgres({
+      host: Resource.Database.host,
+      database: Resource.Database.database,
+      user: Resource.Database.username,
+      password: Resource.Database.password,
+      port: Resource.Database.port,
+    })
+    const db = drizzle(result, {})
+    return db
+  })
+
+  export type TxOrDb = Transaction | ReturnType<typeof client>
 
   const TransactionContext = Context.create<{
     tx: TxOrDb
@@ -47,14 +39,13 @@ export namespace Database {
       return tx.transaction(callback)
     } catch (err) {
       if (err instanceof Context.NotFound) {
-        const client = createClient()
         const effects: (() => void | Promise<void>)[] = []
         const result = await TransactionContext.provide(
           {
             effects,
-            tx: client,
+            tx: client(),
           },
-          () => callback(client),
+          () => callback(client()),
         )
         await Promise.all(effects.map((x) => x()))
         return result
@@ -62,6 +53,7 @@ export namespace Database {
       throw err
     }
   }
+
   export async function fn<Input, T>(callback: (input: Input, trx: TxOrDb) => Promise<T>) {
     return (input: Input) => use(async (tx) => callback(input, tx))
   }
@@ -81,9 +73,8 @@ export namespace Database {
       return callback(tx)
     } catch (err) {
       if (err instanceof Context.NotFound) {
-        const client = createClient()
         const effects: (() => void | Promise<void>)[] = []
-        const result = await client.transaction(async (tx) => {
+        const result = await client().transaction(async (tx) => {
           return TransactionContext.provide({ tx, effects }, () => callback(tx))
         }, config)
         await Promise.all(effects.map((x) => x()))

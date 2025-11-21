@@ -9,25 +9,31 @@
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@aws-sdk/client-lambda": "^3.929.0",
+    "@beeirl/ui": "catalog:",
+    "@openauthjs/openauth": "catalog:",
+    "@postfully/core": "workspace:*",
     "@postfully/resource": "workspace:*",
-    "@remotion/lambda": "^4.0.374",
-    "@tanstack/react-router": "^1.135.2",
-    "@tanstack/react-start": "^1.135.2",
-    "@vitejs/plugin-react": "^5.1.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "vite": "^7.2.2"
+    "@remotion/lambda": "4.0.374",
+    "@tanstack/react-query": "5.90.10",
+    "@tanstack/react-router": "1.139.0",
+    "@tanstack/react-router-ssr-query": "1.139.0",
+    "@tanstack/react-start": "1.139.0",
+    "@vitejs/plugin-react": "catalog:",
+    "drizzle-orm": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "vite": "catalog:"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.14.1",
-    "@cloudflare/workers-types": "^4.20251111.0",
+    "@cloudflare/workers-types": "catalog:",
+    "@tailwindcss/vite": "catalog:",
     "@tsconfig/node22": "catalog:",
     "@types/node": "catalog:",
-    "@types/react": "^19.2.3",
-    "@types/react-dom": "^19.2.2",
-    "nitro": "^3.0.1-alpha.1",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "nitro": "3.0.1-alpha.1",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "5.1.4"
   }
 }

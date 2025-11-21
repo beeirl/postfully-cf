@@ -1,24 +1,23 @@
 import { bigint, boolean, pgTable, primaryKey, varchar } from 'drizzle-orm/pg-core'
-import { ids, timestamps } from '../database/types'
-import { id } from '../database/types'
+import { workspaceColumns, timestampColumns, id, workspaceIndexes } from '../database/types'
 
 export const fileTable = pgTable(
   'file',
   {
-    ...ids,
-    ...timestamps,
+    ...workspaceColumns,
+    ...timestampColumns,
     contentType: varchar('content_type', { length: 255 }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
     public: boolean('public').notNull(),
     size: bigint('size', { mode: 'number' }).notNull(),
   },
-  (table) => [primaryKey({ columns: [table.workspaceID, table.id] })],
+  (table) => [...workspaceIndexes(table)],
 )
 
 export const fileUploadTable = pgTable(
   'file_upload',
   {
-    ...timestamps,
+    ...timestampColumns,
     contentType: varchar('content_type', { length: 255 }).notNull(),
     fileID: id('file_id').notNull(),
     name: varchar('name', { length: 255 }).notNull(),

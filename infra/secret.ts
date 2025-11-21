@@ -7,5 +7,6 @@ export const secret = {
   CLOUDFLARE_R2_SECRET_ACCESS_KEY: new sst.Secret('CLOUDFLARE_R2_SECRET_ACCESS_KEY', process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY),
   DATABASE_USERNAME: new sst.Secret('DATABASE_USERNAME', process.env.DATABASE_USERNAME),
   DATABASE_PASSWORD: new sst.Secret('DATABASE_PASSWORD', process.env.DATABASE_PASSWORD),
+  GOOGLE_CLIENT_ID: new sst.Secret('GOOGLE_CLIENT_ID', process.env.GOOGLE_CLIENT_ID),
 }
 export const allSecrets = Object.values(secret)

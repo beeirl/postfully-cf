@@ -9,38 +9,136 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './../src/routes/__root'
+import { Route as WorkspaceIDRouteImport } from './../src/routes/$workspaceID'
 import { Route as IndexRouteImport } from './../src/routes/index'
+import { Route as AuthIndexRouteImport } from './../src/routes/auth/index'
+import { Route as WorkspaceIDIndexRouteImport } from './../src/routes/$workspaceID/index'
+import { Route as AuthCallbackRouteImport } from './../src/routes/auth/callback'
+import { Route as AuthAuthorizeRouteImport } from './../src/routes/auth/authorize'
+import { Route as WorkspaceIDSettingsRouteImport } from './../src/routes/$workspaceID/settings'
+import { Route as WorkspaceIDRedditStoriesRouteImport } from './../src/routes/$workspaceID/reddit-stories'
 
+const WorkspaceIDRoute = WorkspaceIDRouteImport.update({
+  id: '/$workspaceID',
+  path: '/$workspaceID',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthIndexRoute = AuthIndexRouteImport.update({
+  id: '/auth/',
+  path: '/auth/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceIDIndexRoute = WorkspaceIDIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorkspaceIDRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthAuthorizeRoute = AuthAuthorizeRouteImport.update({
+  id: '/auth/authorize',
+  path: '/auth/authorize',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceIDSettingsRoute = WorkspaceIDSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => WorkspaceIDRoute,
+} as any)
+const WorkspaceIDRedditStoriesRoute =
+  WorkspaceIDRedditStoriesRouteImport.update({
+    id: '/reddit-stories',
+    path: '/reddit-stories',
+    getParentRoute: () => WorkspaceIDRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$workspaceID': typeof WorkspaceIDRouteWithChildren
+  '/$workspaceID/reddit-stories': typeof WorkspaceIDRedditStoriesRoute
+  '/$workspaceID/settings': typeof WorkspaceIDSettingsRoute
+  '/auth/authorize': typeof AuthAuthorizeRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/$workspaceID/': typeof WorkspaceIDIndexRoute
+  '/auth': typeof AuthIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$workspaceID/reddit-stories': typeof WorkspaceIDRedditStoriesRoute
+  '/$workspaceID/settings': typeof WorkspaceIDSettingsRoute
+  '/auth/authorize': typeof AuthAuthorizeRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/$workspaceID': typeof WorkspaceIDIndexRoute
+  '/auth': typeof AuthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$workspaceID': typeof WorkspaceIDRouteWithChildren
+  '/$workspaceID/reddit-stories': typeof WorkspaceIDRedditStoriesRoute
+  '/$workspaceID/settings': typeof WorkspaceIDSettingsRoute
+  '/auth/authorize': typeof AuthAuthorizeRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/$workspaceID/': typeof WorkspaceIDIndexRoute
+  '/auth/': typeof AuthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/$workspaceID'
+    | '/$workspaceID/reddit-stories'
+    | '/$workspaceID/settings'
+    | '/auth/authorize'
+    | '/auth/callback'
+    | '/$workspaceID/'
+    | '/auth'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/$workspaceID/reddit-stories'
+    | '/$workspaceID/settings'
+    | '/auth/authorize'
+    | '/auth/callback'
+    | '/$workspaceID'
+    | '/auth'
+  id:
+    | '__root__'
+    | '/'
+    | '/$workspaceID'
+    | '/$workspaceID/reddit-stories'
+    | '/$workspaceID/settings'
+    | '/auth/authorize'
+    | '/auth/callback'
+    | '/$workspaceID/'
+    | '/auth/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  WorkspaceIDRoute: typeof WorkspaceIDRouteWithChildren
+  AuthAuthorizeRoute: typeof AuthAuthorizeRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
+  AuthIndexRoute: typeof AuthIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/$workspaceID': {
+      id: '/$workspaceID'
+      path: '/$workspaceID'
+      fullPath: '/$workspaceID'
+      preLoaderRoute: typeof WorkspaceIDRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +146,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/': {
+      id: '/auth/'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$workspaceID/': {
+      id: '/$workspaceID/'
+      path: '/'
+      fullPath: '/$workspaceID/'
+      preLoaderRoute: typeof WorkspaceIDIndexRouteImport
+      parentRoute: typeof WorkspaceIDRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/authorize': {
+      id: '/auth/authorize'
+      path: '/auth/authorize'
+      fullPath: '/auth/authorize'
+      preLoaderRoute: typeof AuthAuthorizeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$workspaceID/settings': {
+      id: '/$workspaceID/settings'
+      path: '/settings'
+      fullPath: '/$workspaceID/settings'
+      preLoaderRoute: typeof WorkspaceIDSettingsRouteImport
+      parentRoute: typeof WorkspaceIDRoute
+    }
+    '/$workspaceID/reddit-stories': {
+      id: '/$workspaceID/reddit-stories'
+      path: '/reddit-stories'
+      fullPath: '/$workspaceID/reddit-stories'
+      preLoaderRoute: typeof WorkspaceIDRedditStoriesRouteImport
+      parentRoute: typeof WorkspaceIDRoute
+    }
   }
 }
 
+interface WorkspaceIDRouteChildren {
+  WorkspaceIDRedditStoriesRoute: typeof WorkspaceIDRedditStoriesRoute
+  WorkspaceIDSettingsRoute: typeof WorkspaceIDSettingsRoute
+  WorkspaceIDIndexRoute: typeof WorkspaceIDIndexRoute
+}
+
+const WorkspaceIDRouteChildren: WorkspaceIDRouteChildren = {
+  WorkspaceIDRedditStoriesRoute: WorkspaceIDRedditStoriesRoute,
+  WorkspaceIDSettingsRoute: WorkspaceIDSettingsRoute,
+  WorkspaceIDIndexRoute: WorkspaceIDIndexRoute,
+}
+
+const WorkspaceIDRouteWithChildren = WorkspaceIDRoute._addFileChildren(
+  WorkspaceIDRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  WorkspaceIDRoute: WorkspaceIDRouteWithChildren,
+  AuthAuthorizeRoute: AuthAuthorizeRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
+  AuthIndexRoute: AuthIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from '../src/router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

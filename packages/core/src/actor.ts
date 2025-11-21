@@ -49,14 +49,14 @@ export namespace Actor {
   export function provide<R, T extends Info['type']>(
     type: T,
     properties: Extract<Info, { type: T }>['properties'],
-    cb: () => R
+    cb: () => R,
   ) {
     return ActorContext.provide(
       {
         type,
         properties,
       } as Info,
-      cb
+      cb,
     )
   }
 
@@ -66,7 +66,7 @@ export namespace Actor {
       throw new VisibleError(
         'authentication',
         VisibleErrorCodes.Authentication.UNAUTHORIZED,
-        `Expected actor type ${type}, got ${actor.type}`
+        `Expected actor type ${type}, got ${actor.type}`,
       )
     }
     return actor as Extract<Info, { type: T }>
@@ -77,7 +77,7 @@ export namespace Actor {
     throw new VisibleError(
       'forbidden',
       VisibleErrorCodes.Permission.INSUFFICIENT_PERMISSIONS,
-      'Action not allowed. Ask your workspace admin to perform this action.'
+      'Action not allowed. Ask your workspace admin to perform this action.',
     )
   }
 
@@ -89,8 +89,12 @@ export namespace Actor {
     throw new VisibleError(
       'authentication',
       VisibleErrorCodes.Authentication.UNAUTHORIZED,
-      `actor of type "${actor.type}" is not associated with a workspace`
+      `actor of type "${actor.type}" is not associated with a workspace`,
     )
+  }
+
+  export function workspace() {
+    return workspaceID()
   }
 
   export function accountID() {
@@ -101,7 +105,7 @@ export namespace Actor {
     throw new VisibleError(
       'authentication',
       VisibleErrorCodes.Authentication.UNAUTHORIZED,
-      `actor of type "${actor.type}" is not associated with an account`
+      `actor of type "${actor.type}" is not associated with an account`,
     )
   }
 
@@ -113,4 +117,3 @@ export namespace Actor {
     return assert('user').properties.role
   }
 }
-

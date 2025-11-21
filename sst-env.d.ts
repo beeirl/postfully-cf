@@ -5,6 +5,14 @@
 
 declare module "sst" {
   export interface Resource {
+    "AuthApi": {
+      "type": "sst.cloudflare.Worker"
+      "url": string
+    }
+    "AuthStorage": {
+      "namespaceId": string
+      "type": "sst.cloudflare.Kv"
+    }
     "CLOUDFLARE_API_TOKEN": {
       "type": "sst.sst.Secret"
       "value": string
@@ -18,6 +26,26 @@ declare module "sst" {
       "value": string
     }
     "CLOUDFLARE_R2_SECRET_ACCESS_KEY": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "DATABASE_PASSWORD": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "DATABASE_USERNAME": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "Database": {
+      "database": string
+      "host": string
+      "password": string
+      "port": number
+      "type": "sst.sst.Linkable"
+      "username": string
+    }
+    "GOOGLE_CLIENT_ID": {
       "type": "sst.sst.Secret"
       "value": string
     }

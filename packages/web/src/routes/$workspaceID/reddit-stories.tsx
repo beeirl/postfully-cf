@@ -1,0 +1,15 @@
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/$workspaceID/reddit-stories')({
+  component: RedditStoriesComponent,
+})
+
+function RedditStoriesComponent() {
+  return (
+    <div style={{ padding: '24px' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '16px' }}>Reddit Stories</h1>
+      <p style={{ color: '#6b7280' }}>Reddit stories content will go here.</p>
+    </div>
+  )
+}
+

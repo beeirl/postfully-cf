@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { fn } from '../utils/fn'
-import { Resource } from 'sst'
+import { Resource } from '@postfully/resource'
 
 export namespace Storage {
   export function getBucket(isPublic?: boolean) {

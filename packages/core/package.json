@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./src/*"
+    "./*": "./src/*.ts"
   },
   "scripts": {
     "db": "sst shell drizzle-kit",
@@ -17,8 +17,9 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
+    "@postfully/resource": "workspace:*",
     "@planetscale/database": "1.19.0",
-    "drizzle-orm": "0.41.0",
+    "drizzle-orm": "catalog:",
     "luxon": "catalog:",
     "postgres": "3.4.7",
     "remeda": "catalog:",
@@ -31,7 +32,7 @@
     "@tsconfig/node22": "catalog:",
     "@types/luxon": "catalog:",
     "@types/node": "catalog:",
-    "drizzle-kit": "0.30.5",
+    "drizzle-kit": "catalog:",
     "typescript": "catalog:"
   }
 }
